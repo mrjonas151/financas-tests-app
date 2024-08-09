@@ -1,0 +1,33 @@
+{
+  "name": "financas-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "jest",
+    "lint": "eslint src/** test/** --fix",
+    "secure-mode": "jest --watchAll --verbose=true"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.8.0",
+    "eslint": "^9.8.0",
+    "globals": "^15.9.0",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcrypt-nodejs": "^0.0.3",
+    "body-parser": "^1.20.2",
+    "consign": "^0.1.6",
+    "express": "^4.19.2",
+    "jwt-simple": "^0.5.6",
+    "knex": "^3.1.0",
+    "knex-logger": "^0.1.0",
+    "pg": "^8.12.0"
+  }
+}
