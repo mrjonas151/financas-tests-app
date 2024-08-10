@@ -46,6 +46,29 @@ test('Deve inserir uma transação com sucesso', () => {
         .then((res) => {
             expect(res.status).toBe(201);
             expect(res.body.acc_id).toBe(accUser.id);
+            expect(res.body.ammount).toBe('100.00');
+        });
+});
+
+test('Transações de entrada devem ser positivas', () => {
+    return request(app).post(MAIN_ROUTE)
+        .set('authorization', `bearer ${user.token}`)
+        .send({ description: 'New T', date: new Date(), ammount: -100, type: 'I', acc_id: accUser.id })
+        .then((res) => {
+            expect(res.status).toBe(201);
+            expect(res.body.acc_id).toBe(accUser.id);
+            expect(res.body.ammount).toBe('100.00');
+        });
+});
+
+test('Transações de saída devem ser negativas', () => {
+    return request(app).post(MAIN_ROUTE)
+        .set('authorization', `bearer ${user.token}`)
+        .send({ description: 'New T', date: new Date(), ammount: 100, type: 'O', acc_id: accUser.id })
+        .then((res) => {
+            expect(res.status).toBe(201);
+            expect(res.body.acc_id).toBe(accUser.id);
+            expect(res.body.ammount).toBe('-100.00');
         });
 });
 
@@ -80,5 +103,16 @@ test('Deve remover uma transação', () => {
         .set('authorization', `bearer ${user.token}`)
         .then((res) => {
             expect(res.status).toBe(204);
+    }));
+});
+
+test('Não deve remover uma transação de outro usuário', () => {
+    return app.db('transactions').insert(
+        { description: 'To Delete', date: new Date(), ammount: 150, type: 'I', acc_id: accUser2.id }, ['id']
+    ).then((transaction) => request(app).delete(`${MAIN_ROUTE}/${transaction[0].id}`)
+        .set('authorization', `bearer ${user.token}`)
+        .then((res) => {
+            expect(res.status).toBe(403);
+            expect(res.body.error).toBe('Este recurso não pertence ao usuário');
     }));
 });
