@@ -6,13 +6,14 @@ const MAIN_ROUTE = '/v1/accounts';
 let user;
 let user2;
 
-beforeEach(async () => {
+beforeAll(async () => {
   const res = await app.services.user.save({ name: 'User Account', mail: `${Date.now()}@mail.com`, passwd: '123456' });
   user = { ...res[0] };
   user.token = jwt.encode(user, 'Segredo!'); //segredo deve estar no .env
   const res2 = await app.services.user.save({ name: 'User Account #2', mail: `${Date.now()}@mail.com`, passwd: '123456' });
   user = { ...res2[0] };
 });
+
 
 test('Deve listar apenas as contas do usuário', () => {
     return app.db('accounts')
