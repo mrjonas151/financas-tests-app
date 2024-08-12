@@ -15,7 +15,10 @@ beforeAll(async () => {
 });
 
 
-test('Deve listar apenas as contas do usuário', () => {
+test('Deve listar apenas as contas do usuário',async () => {
+    await app.db('transactions').del();
+    await app.db('transfers').del();
+    await app.db('accounts').del();
     return app.db('accounts')
         .insert({ name: 'Acc User #1', user_id: user.id })
         .then(() => app.db('accounts').insert({ name: 'Acc User #2', user_id: user2.id }))
