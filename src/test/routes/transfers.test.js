@@ -178,3 +178,36 @@ describe('Ao tentar alterar uma transferência inválida', () => {
     test('Não deve inserir se as contas de origem e destino forem as mesmas', () => template({ acc_dest_id: 10000 }, 'Conta de origem e destino não podem ser a mesma'));
     test('Não deve inserir se as contas pertencerem a outros usuários', () => template({ acc_ori_id: 9997 }, 'Conta #9997 não pertence ao usuário'));
 });
+
+describe('Ao remover uma transferência', () => {
+    test('Deve retornar o status 204', () => {
+        return request(app).delete(`${MAIN_ROUTE}/10000`)
+            .set('authorization', `bearer ${TOKEN}`)
+            .then((res) => {
+                expect(res.status).toBe(204);
+            });
+    });
+
+    test('O registro deve ter sido removido do banco', () => {
+        return app.db('transfers').where({ id: 10000 })
+            .then((result) => {
+                expect(result).toHaveLength(0);
+            });
+    });
+
+    test('As transações associadas devem ter sido removidas', () => {
+        return app.db('transactions').where({ transfer_id: 10000 })
+            .then((result) => {
+                expect(result).toHaveLength(0);
+            });
+    });
+});
+
+test('Não deve retornar transferência de outro usuário', () => {
+    return request(app).get(`${MAIN_ROUTE}/10001`)
+        .set('authorization', `bearer ${TOKEN}`)
+        .then((res) => {
+            expect(res.status).toBe(403);
+            expect(res.body.error).toBe('Este recurso não pertence ao usuário');
+        });
+});

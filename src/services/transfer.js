@@ -28,7 +28,6 @@ module.exports = (app) => {
     }
 
     const save = async (transfer) => {
-        await validate(transfer);
 
         const result =  await app.db('transfers').insert(transfer, '*');
         const transferId = transfer[0].id;
@@ -42,7 +41,6 @@ module.exports = (app) => {
     };
 
     const update = async (id, transfer) => {
-        await validate(transfer);
 
         if (transfer.id) throw new ValidationError('Não é permitido alteração de ID');
         const result =  app.db('transfers')
@@ -59,5 +57,11 @@ module.exports = (app) => {
         return result;
     }
 
-    return { find, save, findOne, update, validate };
+    const remove = async (id) => {
+        await app.db('transactions').where({ transfer_id: id }).del();
+        
+        return app.db('transfers').where({ id }).del();
+    };
+
+    return { find, save, findOne, update, validate, remove };
 }
